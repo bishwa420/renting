@@ -19,12 +19,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @PostConstruct
-    private void init() {
-
-        String regexp = "^([_a-zA-Z0-9-]+(\\\\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\\\\.[a-zA-Z0-9-]+)*(\\\\.[a-zA-Z]{1,6}))?$";
-        regexp.matches("bishwa@gmail.com");
-    }
 
     public void signup(SignupRequest signupRequest) {
 

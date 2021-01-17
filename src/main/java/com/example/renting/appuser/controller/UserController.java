@@ -33,7 +33,7 @@ public class UserController {
         userService.signup(request);
 
         return ResponseEntity.ok(
-            BasicRestResponse.ok("User created successfully")
+            BasicRestResponse.message("User created successfully")
         );
     }
 }

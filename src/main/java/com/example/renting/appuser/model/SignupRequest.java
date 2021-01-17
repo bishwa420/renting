@@ -19,7 +19,7 @@ public class SignupRequest {
     @NotEmpty(message = "Email cannot be empty")
     @Size(max = 100, message = "Email must be between 1 to 100 characters")
     @Pattern(regexp = "^[A-Za-z0-9][A-Za-z0-9._-]*@[A-Za-z0-9][A-Za-z0-9._-]*\\.([A-Za-z0-9][A-Za-z0-9_-]\\.)*[A-Za-z]{2,}$"
-            , message = "Email address  must be valid")
+            , message = "Email address must be valid")
     public String email;
 
     @NotNull(message = "Password must be given")
