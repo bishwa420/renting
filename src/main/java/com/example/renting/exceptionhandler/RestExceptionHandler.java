@@ -1,10 +1,7 @@
 package com.example.renting.exceptionhandler;
 
-import com.example.renting.exception.ConflictException;
+import com.example.renting.exception.RentalException;
 import com.example.renting.model.BasicRestResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -42,8 +39,8 @@ public class RestExceptionHandler {
                 .body(BasicRestResponse.message(errorMessage));
     }
 
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity handleConflictException(ConflictException ex) {
+    @ExceptionHandler(RentalException.class)
+    public ResponseEntity handleRentalException(RentalException ex) {
 
         return ResponseEntity
                 .status(ex.getCode())
