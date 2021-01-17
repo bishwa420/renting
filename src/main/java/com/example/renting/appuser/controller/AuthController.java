@@ -1,5 +1,6 @@
 package com.example.renting.appuser.controller;
 
+import com.example.renting.annotation.NoTokenRequired;
 import com.example.renting.appuser.model.LoginRequest;
 import com.example.renting.appuser.model.LoginResponse;
 import com.example.renting.appuser.service.AuthService;
@@ -24,6 +25,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    @NoTokenRequired
     @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login(@RequestBody @Valid LoginRequest request) {

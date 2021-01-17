@@ -37,9 +37,9 @@ public class User {
     }
 
     public enum Role {
-        ROLE_ADMIN("ADMIN"),
-        ROLE_REALTOR("REALTOR"),
-        ROLE_CLIENT("CLIENT");
+        ADMIN("ADMIN"),
+        REALTOR("REALTOR"),
+        CLIENT("CLIENT");
 
         private String role;
 

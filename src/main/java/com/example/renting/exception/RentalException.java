@@ -32,6 +32,10 @@ public class RentalException extends RuntimeException {
         this.code = code;
     }
 
+    public static RentalException internal() {
+        return new RentalException("Internal error! Please try again", 500);
+    }
+
     @Override
     public String toString() {
         return "RentalException{" +

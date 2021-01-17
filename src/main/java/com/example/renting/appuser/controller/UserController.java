@@ -1,5 +1,6 @@
 package com.example.renting.appuser.controller;
 
+import com.example.renting.annotation.NoTokenRequired;
 import com.example.renting.appuser.model.SignupRequest;
 import com.example.renting.appuser.service.UserService;
 import com.example.renting.model.BasicRestResponse;
@@ -24,6 +25,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @NoTokenRequired
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BasicRestResponse> signup(@Valid @RequestBody SignupRequest request) {
