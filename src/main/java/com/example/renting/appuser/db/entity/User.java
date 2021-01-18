@@ -21,7 +21,7 @@ public class User {
     private static final Logger log = LoggerFactory.getLogger(User.class);
 
     public enum Status {
-        NOT_VERIFIED("NOT_VERIFED"),
+        NOT_VERIFIED("NOT_VERIFIED"),
         ACTIVE("ACTIVE"),
         INACTIVE("INACTIVE");
 

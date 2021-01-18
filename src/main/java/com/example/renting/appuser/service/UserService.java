@@ -3,6 +3,7 @@ package com.example.renting.appuser.service;
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
 import com.example.renting.appuser.model.SignupRequest;
+import com.example.renting.appuser.model.UserListResponse;
 import com.example.renting.exception.ConflictException;
 import com.example.renting.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -10,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -20,6 +25,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private void userDoesNotExist(String email) {
 
@@ -48,5 +56,41 @@ public class UserService {
         user = userRepository.save(user);
 
         log.info("User with email {} has been stored into DB successfully", user.email);
+    }
+
+    public UserListResponse getUserList(int page, int limit, String nameLike, String emailLike) {
+
+        if(page < 1) page = 1;
+        if(limit < 1 || limit > 100) limit = 10;
+
+        String dataSql = "SELECT u FROM User u";
+        String countSql = "SELECT count(u) FROM User u";
+
+        List<String> whereClauseList = new ArrayList<>();
+        if(nameLike != null) {
+            whereClauseList.add("u.name LIKE '%" + nameLike + "%'"); // TODO make this case insensitive
+        }
+        if(emailLike != null) {
+            whereClauseList.add("u.email LIKE '%" + emailLike + "%'"); // TODO make this case insensitive
+        }
+
+        if(!whereClauseList.isEmpty()) {
+
+            dataSql += " WHERE " + String.join(" AND ", whereClauseList);
+            countSql += " WHERE " + String.join(" AND ", whereClauseList);
+        }
+
+        dataSql += " ORDER BY u.updatedAt DESC";
+
+        Query dataQuery = entityManager.createQuery(dataSql);
+        Query countQuery = entityManager.createQuery(countSql);
+
+        dataQuery.setFirstResult((page - 1) * limit);
+        dataQuery.setMaxResults(limit);
+
+        List<User> userList = dataQuery.getResultList();
+        int totalCount = (int) (long) countQuery.getSingleResult();
+
+        return UserListResponse.response(userList, totalCount, page, limit);
     }
 }
