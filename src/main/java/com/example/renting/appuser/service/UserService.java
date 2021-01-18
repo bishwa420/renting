@@ -2,6 +2,7 @@ package com.example.renting.appuser.service;
 
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
+import com.example.renting.appuser.model.CreateUserRequest;
 import com.example.renting.appuser.model.SignupRequest;
 import com.example.renting.appuser.model.UserListResponse;
 import com.example.renting.exception.ConflictException;
@@ -31,10 +32,8 @@ public class UserService {
 
     private void userDoesNotExist(String email) {
 
-        log.info("User does not exist method called with email: {}", email);
         Optional<User> userOptional = userRepository.findByEmail(email);
 
-        log.info("user optional: {}", userOptional.isPresent() ? "Present" : "Not present");
         if(userOptional.isPresent()) {
             throw ConflictException.ex("User with email: " + email + " already exists");
         }
@@ -52,13 +51,7 @@ public class UserService {
 
     public void signup(SignupRequest signupRequest) {
 
-        User user = User.of(signupRequest);
-
-        userDoesNotExist(signupRequest.email);
-
-        user = userRepository.save(user);
-
-        log.info("User with email {} has been stored into DB successfully", user.email);
+        createUser(signupRequest);
     }
 
     public UserListResponse getUserList(int page, int limit, String nameLike, String emailLike) {
@@ -95,5 +88,16 @@ public class UserService {
         int totalCount = (int) (long) countQuery.getSingleResult();
 
         return UserListResponse.response(userList, totalCount, page, limit);
+    }
+
+    public void createUser(CreateUserRequest request) {
+
+        userDoesNotExist(request.email);
+
+        User user = User.of(request);
+
+        user = userRepository.save(user);
+
+        log.info("User with email {} has stored into DB successfully", user.email);
     }
 }

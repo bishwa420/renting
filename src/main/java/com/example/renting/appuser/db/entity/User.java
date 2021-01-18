@@ -1,5 +1,6 @@
 package com.example.renting.appuser.db.entity;
 
+import com.example.renting.appuser.model.CreateUserRequest;
 import com.example.renting.appuser.model.SignupRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -109,6 +110,20 @@ public class User {
         user.email = signupRequest.email;
         user.password = BCrypt.hashpw(signupRequest.password, BCrypt.gensalt());
         user.role = signupRequest.role;
+        user.updatedAt = LocalDateTime.now();
+        user.setStatus(Status.NOT_VERIFIED);
+        user.isDeleted = false;
+
+        return user;
+    }
+
+    public static User of(CreateUserRequest request) {
+
+        User user = new User();
+        user.name = request.name;
+        user.email = request.email;
+        user.password = BCrypt.hashpw(request.password, BCrypt.gensalt());
+        user.role = request.role;
         user.updatedAt = LocalDateTime.now();
         user.setStatus(Status.NOT_VERIFIED);
         user.isDeleted = false;
