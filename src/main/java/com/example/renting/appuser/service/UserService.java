@@ -31,7 +31,10 @@ public class UserService {
 
     private void userDoesNotExist(String email) {
 
+        log.info("User does not exist method called with email: {}", email);
         Optional<User> userOptional = userRepository.findByEmail(email);
+
+        log.info("user optional: {}", userOptional.isPresent() ? "Present" : "Not present");
         if(userOptional.isPresent()) {
             throw ConflictException.ex("User with email: " + email + " already exists");
         }
