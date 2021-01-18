@@ -68,7 +68,7 @@ public class UserOperationsTest {
 
 
     @Test
-    public void whenSignupRequestBodyIsInvalid_responseIsAlsoGivenAsBadRequest() throws Exception {
+    public void whenSignupRequestBodyIsInvalid_expectResponseGivenAsBadRequest() throws Exception {
 
         SignupRequest request = new SignupRequest();
         request.email = "invalid";
@@ -88,7 +88,7 @@ public class UserOperationsTest {
     }
 
     @Test
-    public void whenSignupRequestHasDuplicateEmail_ThenConflictResponseIsGiven() throws Exception {
+    public void whenSignupRequestHasDuplicateEmail_expectConflictResponseIsGiven() throws Exception {
 
         SignupRequest request = new SignupRequest();
         request.name = "John";
@@ -107,5 +107,10 @@ public class UserOperationsTest {
         BasicRestResponse response = new ObjectMapper().readValue(content, BasicRestResponse.class);
 
         assertThat(response.message.equals("User with email: " + "a@b.c already exists"));
+    }
+
+    @Test
+    public void whenUserListIsFetched_expectTheUserList() throws Exception {
+
     }
 }
