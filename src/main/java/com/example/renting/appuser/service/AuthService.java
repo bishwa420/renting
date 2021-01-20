@@ -90,7 +90,7 @@ public class AuthService {
 
     public String getToken(LoginRequest request) {
 
-        User user = userService.getByEmail(request.email);
+        User user = userService.getNotDeletedUserByEmail(request.email);
         passwordMatches(user.password, request.password);
 
         return generateToken(user);

@@ -39,14 +39,18 @@ public class UserService {
         }
     }
 
-    public User getByEmail(String email) {
+    public User getNotDeletedUserByEmail(String email) {
 
         Optional<User> userOptional = userRepository.findByEmail(email);
         if(!userOptional.isPresent()) {
             log.error("User with email {} not found", email);
             throw NotFoundException.ex("User not found");
         }
-        return userOptional.get();
+        User user = userOptional.get();
+        if(user.isDeleted) {
+            throw NotFoundException.ex("User deleted permanently");
+        }
+        return user;
     }
 
     public void signup(SignupRequest signupRequest) {

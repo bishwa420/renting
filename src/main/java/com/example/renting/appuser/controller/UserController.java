@@ -28,7 +28,7 @@ public class UserController {
 
     @NoTokenRequired
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BasicRestResponse> signup(@Valid @RequestBody SignupRequest request) {
 
         log.info("Received sign up request from user: {}", request);
@@ -41,8 +41,7 @@ public class UserController {
     }
 
     @AdminPrivileged
-    @GetMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserListResponse> getUsersList(@RequestParam(name = "page", defaultValue = "1") int page,
                                                          @RequestParam(name = "limit", defaultValue = "10") int limit,
                                                          @RequestParam(name = "nameLike", required = false) String nameLike,
