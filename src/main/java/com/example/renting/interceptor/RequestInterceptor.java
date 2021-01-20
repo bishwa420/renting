@@ -10,10 +10,13 @@ import com.example.renting.exception.ForbiddenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -64,6 +67,14 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
+
+
+        if(!request.getDispatcherType().equals(DispatcherType.REQUEST))
+            return true;
+        if(request.getMethod().equals(HttpMethod.OPTIONS.toString())) {
+            return true;
+        }
+
         log.info("=== RECEIVED {} {} from {}", request.getMethod(), request.getRequestURI(),
                 request.getAttribute("clientIP"));
 
@@ -94,5 +105,14 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         }
 
         return true;
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
+                           ModelAndView modelAndView) throws Exception{
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "*");
     }
 }
