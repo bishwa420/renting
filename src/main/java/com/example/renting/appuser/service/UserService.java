@@ -68,10 +68,10 @@ public class UserService {
 
         List<String> whereClauseList = new ArrayList<>();
         if(nameLike != null) {
-            whereClauseList.add("u.name LIKE '%" + nameLike + "%'"); // TODO make this case insensitive
+            whereClauseList.add("LOWER(u.name) LIKE '%" + nameLike.toLowerCase() + "%'");
         }
         if(emailLike != null) {
-            whereClauseList.add("u.email LIKE '%" + emailLike + "%'"); // TODO make this case insensitive
+            whereClauseList.add("LOWER(u.email) LIKE '%" + emailLike.toLowerCase() + "%'");
         }
 
         if(!whereClauseList.isEmpty()) {
