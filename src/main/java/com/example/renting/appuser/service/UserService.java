@@ -3,6 +3,7 @@ package com.example.renting.appuser.service;
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
 import com.example.renting.appuser.model.CreateUserRequest;
+import com.example.renting.appuser.model.DeleteUserRequest;
 import com.example.renting.appuser.model.SignupRequest;
 import com.example.renting.appuser.model.UserListResponse;
 import com.example.renting.exception.ConflictException;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +77,8 @@ public class UserService {
             whereClauseList.add("LOWER(u.email) LIKE '%" + emailLike.toLowerCase() + "%'");
         }
 
+        whereClauseList.add("u.isDeleted = FALSE");
+
         if(!whereClauseList.isEmpty()) {
 
             dataSql += " WHERE " + String.join(" AND ", whereClauseList);
@@ -103,5 +108,23 @@ public class UserService {
         user = userRepository.save(user);
 
         log.info("User with email {} has stored into DB successfully", user.email);
+    }
+
+    public void deleteUser(DeleteUserRequest request) {
+
+        Optional<User> userOptional = userRepository.findByEmail(request.email);
+        if(!userOptional.isPresent()) {
+            throw NotFoundException.ex("The user with email " + request.email + " not found");
+        }
+
+        User user = userOptional.get();
+        if(user.isDeleted) {
+            throw NotFoundException.ex("The user is already deleted");
+        }
+
+        user.isDeleted = true;
+        user.updatedAt = LocalDateTime.now();
+
+        userRepository.save(user);
     }
 }

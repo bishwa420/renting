@@ -3,6 +3,7 @@ package com.example.renting.appuser.controller;
 import com.example.renting.annotation.AdminPrivileged;
 import com.example.renting.annotation.NoTokenRequired;
 import com.example.renting.appuser.model.CreateUserRequest;
+import com.example.renting.appuser.model.DeleteUserRequest;
 import com.example.renting.appuser.model.SignupRequest;
 import com.example.renting.appuser.model.UserListResponse;
 import com.example.renting.appuser.service.UserService;
@@ -62,5 +63,16 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(BasicRestResponse.message("User created successfully"));
+    }
+
+    @AdminPrivileged
+    @DeleteMapping(value = "")
+    public ResponseEntity<BasicRestResponse> deleteUser(@Valid @RequestBody DeleteUserRequest request) {
+
+        userService.deleteUser(request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(BasicRestResponse.message("User deleted successfully"));
     }
 }
