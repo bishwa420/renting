@@ -2,10 +2,7 @@ package com.example.renting.appuser.controller;
 
 import com.example.renting.annotation.AdminPrivileged;
 import com.example.renting.annotation.NoTokenRequired;
-import com.example.renting.appuser.model.CreateUserRequest;
-import com.example.renting.appuser.model.DeleteUserRequest;
-import com.example.renting.appuser.model.SignupRequest;
-import com.example.renting.appuser.model.UserListResponse;
+import com.example.renting.appuser.model.*;
 import com.example.renting.appuser.service.UserService;
 import com.example.renting.model.BasicRestResponse;
 import org.slf4j.Logger;
@@ -74,5 +71,14 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(BasicRestResponse.message("User deleted successfully"));
+    }
+
+    @AdminPrivileged
+    @PutMapping(value = "")
+    public ResponseEntity<BasicRestResponse> updateUser(@Valid @RequestBody UpdateUserRequest request) {
+
+        userService.updateUser(request);
+
+        return ResponseEntity.ok(BasicRestResponse.message("User updated successfully"));
     }
 }

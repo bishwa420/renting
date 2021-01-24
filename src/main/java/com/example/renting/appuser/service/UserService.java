@@ -2,10 +2,7 @@ package com.example.renting.appuser.service;
 
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
-import com.example.renting.appuser.model.CreateUserRequest;
-import com.example.renting.appuser.model.DeleteUserRequest;
-import com.example.renting.appuser.model.SignupRequest;
-import com.example.renting.appuser.model.UserListResponse;
+import com.example.renting.appuser.model.*;
 import com.example.renting.exception.ConflictException;
 import com.example.renting.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -108,6 +105,41 @@ public class UserService {
         user = userRepository.save(user);
 
         log.info("User with email {} has stored into DB successfully", user.email);
+    }
+
+    private User getValidUser(UpdateUserRequest request) {
+
+        Optional<User> userOptional = userRepository.findById(request.id);
+        if(!userOptional.isPresent()) {
+            throw NotFoundException.ex("User ID: " + request.id + " not found");
+        }
+
+        User user = userOptional.get();
+        if(user.isDeleted) {
+            throw NotFoundException.ex("User is already deleted");
+        }
+
+        Optional<User> userWithSameEmailOptional = userRepository.findByEmail(request.email);
+        if(!userWithSameEmailOptional.isPresent()) {
+            return user;
+        }
+        User userWithSameEmail = userWithSameEmailOptional.get();
+        if(!userWithSameEmail.id.equals(user.id))  {
+            throw ConflictException.ex("Another user with same email exists");
+        }
+
+        return user;
+    }
+
+    public void updateUser(UpdateUserRequest request) {
+
+        User user = getValidUser(request);
+
+        user.update(request);
+
+        userRepository.save(user);
+
+        log.info("User #{} has been updated in DB successfully", user.id);
     }
 
     public void deleteUser(DeleteUserRequest request) {

@@ -2,6 +2,7 @@ package com.example.renting.appuser.db.entity;
 
 import com.example.renting.appuser.model.CreateUserRequest;
 import com.example.renting.appuser.model.SignupRequest;
+import com.example.renting.appuser.model.UpdateUserRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -129,6 +130,14 @@ public class User {
         user.isDeleted = false;
 
         return user;
+    }
+
+    public void update(UpdateUserRequest request) {
+
+        this.name = request.name;
+        this.email = request.email;
+        this.role = request.role;
+        this.updatedAt = LocalDateTime.now();
     }
 
     @Override
