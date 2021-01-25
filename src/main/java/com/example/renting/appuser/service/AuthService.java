@@ -76,9 +76,11 @@ public class AuthService {
         Claims claims = Jwts.claims()
                 .setId(UUID.randomUUID().toString().replaceAll("-", ""))
                 .setSubject("Authentication token")
-                .setExpiration(new Date(currentTimeMillis()))
+                .setExpiration(new Date(currentTimeMillis() + 24*3600*1000L))
                 .setIssuedAt(new Date())
                 .setAudience(user.email);
+
+        claims.putAll(getRoleMap(user));
 
         return Jwts.builder()
                 .setClaims(claims)
