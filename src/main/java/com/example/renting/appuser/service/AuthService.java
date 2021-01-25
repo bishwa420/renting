@@ -16,6 +16,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
 
+import static java.lang.System.currentTimeMillis;
+
 @Service
 public class AuthService {
 
@@ -71,21 +73,17 @@ public class AuthService {
 
     private String generateToken(User user) {
 
-        Date now = new Date();
-        long expirationMillis = now.getTime() + 24*3600*1000L;
-        Date expirationTime = new Date(expirationMillis);
+        Claims claims = Jwts.claims()
+                .setId(UUID.randomUUID().toString().replaceAll("-", ""))
+                .setSubject("Authentication token")
+                .setExpiration(new Date(currentTimeMillis()))
+                .setIssuedAt(new Date())
+                .setAudience(user.email);
 
-        JwtBuilder builder = Jwts.builder();
-        builder.setIssuer("ADMIN");
-        builder.setId(UUID.randomUUID().toString().replace("-", ""));
-        builder.setSubject("Authentication token");
-        builder.setAudience(user.email);
-        builder.setIssuedAt(now);
-        builder.setExpiration(expirationTime);
-        builder.signWith(SignatureAlgorithm.HS512,secretKey);
-        builder.setClaims(getRoleMap(user));
-
-        return builder.compact();
+        return Jwts.builder()
+                .setClaims(claims)
+                .signWith(SignatureAlgorithm.HS512, SECRET_KEY_STRING)
+                .compact();
     }
 
     public String getToken(LoginRequest request) {
