@@ -1,7 +1,7 @@
 package com.example.renting.appuser.db.entity;
 
-import com.example.renting.appuser.model.CreateUserRequest;
 import com.example.renting.appuser.model.SignupRequest;
+import com.example.renting.appuser.model.CreateUserRequest;
 import com.example.renting.appuser.model.UpdateUserRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -104,13 +104,12 @@ public class User {
     }
 
 
-    public static User of(SignupRequest signupRequest) {
+    public static User of(CreateUserRequest createUserRequest) {
 
         User user = new User();
-        user.name = signupRequest.name;
-        user.email = signupRequest.email;
-        user.password = BCrypt.hashpw(signupRequest.password, BCrypt.gensalt());
-        user.role = signupRequest.role;
+        user.name = createUserRequest.name;
+        user.email = createUserRequest.email;
+        user.role = createUserRequest.role;
         user.updatedAt = LocalDateTime.now();
         user.setStatus(Status.NOT_VERIFIED);
         user.isDeleted = false;
@@ -118,7 +117,21 @@ public class User {
         return user;
     }
 
-    public static User of(CreateUserRequest request) {
+    public static User signup(SignupRequest request) {
+
+        User user = new User();
+        user.name = request.name;
+        user.email = request.email;
+        user.password = BCrypt.hashpw(request.password, BCrypt.gensalt());
+        user.role = request.role;
+        user.updatedAt = LocalDateTime.now();
+        user.setStatus(Status.NOT_VERIFIED);
+        user.isDeleted = false;
+
+        return user;
+    }
+
+    public static User of(SignupRequest request) {
 
         User user = new User();
         user.name = request.name;

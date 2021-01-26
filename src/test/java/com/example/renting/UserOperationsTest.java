@@ -3,7 +3,7 @@ package com.example.renting;
 import com.example.renting.appuser.controller.UserController;
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
-import com.example.renting.appuser.model.SignupRequest;
+import com.example.renting.appuser.model.CreateUserRequest;
 import com.example.renting.model.BasicRestResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,10 +73,9 @@ public class UserOperationsTest {
     @Test
     public void whenSignupRequestBodyIsInvalid_expectResponseGivenAsBadRequest() throws Exception {
 
-        SignupRequest request = new SignupRequest();
+        CreateUserRequest request = new CreateUserRequest();
         request.email = "invalid";
         request.name = "John";
-        request.password = "pass";
         request.role = "ADMIN";
         MvcResult result = this.mockMvc.perform(post("/user")
                                                 .contentType(MediaType.APPLICATION_JSON)
@@ -93,10 +92,9 @@ public class UserOperationsTest {
     //@Test
     public void whenSignupRequestHasDuplicateEmail_expectConflictResponseIsGiven() throws Exception {
 
-        SignupRequest request = new SignupRequest();
+        CreateUserRequest request = new CreateUserRequest();
         request.name = "John";
         request.email = "bishwa420@gmail.com";
-        request.password = "pass";
         request.role = "REALTOR";
 
         MvcResult result = this.mockMvc.perform(post("/user")

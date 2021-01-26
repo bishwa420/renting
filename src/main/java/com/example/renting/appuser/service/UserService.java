@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,13 @@ public class UserService {
 
     public void signup(SignupRequest signupRequest) {
 
-        createUser(signupRequest);
+        userDoesNotExist(signupRequest.email);
+
+        User user = User.of(signupRequest);
+
+        user = userRepository.save(user);
+
+        log.info("User with email {} has stored into DB successfully", user.email);
     }
 
     public UserListResponse getUserList(int page, int limit, String nameLike, String emailLike) {
