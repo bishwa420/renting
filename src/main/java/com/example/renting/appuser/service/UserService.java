@@ -39,7 +39,7 @@ public class UserService {
         }
     }
 
-    public User getNotDeletedUserByEmail(String email) {
+    public User getNotSuspendedActiveUser(String email) {
 
         Optional<User> userOptional = userRepository.findByEmail(email);
         if(!userOptional.isPresent()) {
@@ -47,8 +47,8 @@ public class UserService {
             throw NotFoundException.ex("User not found");
         }
         User user = userOptional.get();
-        if(user.isDeleted) {
-            throw NotFoundException.ex("User deleted permanently");
+        if(user.isSuspended) {
+            throw NotFoundException.ex("User suspended");
         }
         return user;
     }
@@ -61,7 +61,7 @@ public class UserService {
             throw NotFoundException.ex("User not found");
         }
         User user = userOptional.get();
-        if(user.isDeleted) {
+        if(user.isSuspended) {
             throw NotFoundException.ex("User is not eligible for verification");
         }
         if(user.getStatus().equals(User.Status.VERIFIED)) {
@@ -90,8 +90,6 @@ public class UserService {
         if(emailLike != null) {
             whereClauseList.add("LOWER(u.email) LIKE '%" + emailLike.toLowerCase() + "%'");
         }
-
-        whereClauseList.add("u.isDeleted = FALSE");
 
         if(!whereClauseList.isEmpty()) {
 
@@ -132,8 +130,8 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        if(user.isDeleted) {
-            throw NotFoundException.ex("User is already deleted");
+        if(user.isSuspended) {
+            throw NotFoundException.ex("User is already suspended");
         }
 
         Optional<User> userWithSameEmailOptional = userRepository.findByEmail(request.email);
@@ -159,7 +157,7 @@ public class UserService {
         log.info("User #{} has been updated in DB successfully", user.id);
     }
 
-    public void deleteUser(DeleteUserRequest request) {
+    public void suspendUser(DeleteUserRequest request) {
 
         Optional<User> userOptional = userRepository.findByEmail(request.email);
         if(!userOptional.isPresent()) {
@@ -167,11 +165,11 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        if(user.isDeleted) {
-            throw NotFoundException.ex("The user is already deleted");
+        if(user.isSuspended) {
+            throw NotFoundException.ex("The user is already suspended");
         }
 
-        user.isDeleted = true;
+        user.isSuspended = true;
         user.updatedAt = LocalDateTime.now();
 
         userRepository.save(user);

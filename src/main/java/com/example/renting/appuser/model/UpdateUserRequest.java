@@ -21,6 +21,9 @@ public class UpdateUserRequest {
     @Pattern(regexp = "ADMIN|REALTOR|CLIENT", message = "Role must either be 'ADMIN', or 'REALTOR', or 'CLIENT'")
     public String role;
 
+    @NotNull(message = "Suspend instruction cannot be empty")
+    public Boolean doSuspend;
+
     @Override
     public String toString() {
         return "UpdateUserRequest{" +

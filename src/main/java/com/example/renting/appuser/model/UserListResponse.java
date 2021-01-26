@@ -17,6 +17,7 @@ public class UserListResponse {
         public String status;
         public String role;
         public String updatedAt;
+        public Boolean isSuspended;
 
         public UserResponse(User user) {
 
@@ -26,6 +27,7 @@ public class UserListResponse {
             this.status = user.getStatus().get();
             this.role = user.getRole().get();
             this.updatedAt = user.updatedAt.format(DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm a"));
+            this.isSuspended = user.isSuspended;
         }
 
         @Override

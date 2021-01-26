@@ -1,6 +1,5 @@
 package com.example.renting.appuser.db.entity;
 
-import com.example.renting.appuser.model.SignupRequest;
 import com.example.renting.appuser.model.CreateUserRequest;
 import com.example.renting.appuser.model.UpdateUserRequest;
 import lombok.AllArgsConstructor;
@@ -77,8 +76,8 @@ public class User {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "is_deleted")
-    public Boolean isDeleted;
+    @Column(name = "is_suspended")
+    public Boolean isSuspended;
 
     @Column(name = "verification_param")
     public String verificationParam;
@@ -117,7 +116,7 @@ public class User {
         user.updatedAt = LocalDateTime.now();
         user.setStatus(Status.NOT_VERIFIED);
         user.verificationParam = UUID.randomUUID().toString().replaceAll("-","");
-        user.isDeleted = false;
+        user.isSuspended = false;
 
         return user;
     }
@@ -128,6 +127,7 @@ public class User {
         this.name = request.name;
         this.email = request.email;
         this.role = request.role;
+        this.isSuspended = request.doSuspend;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -141,7 +141,7 @@ public class User {
                 ", role='" + role + '\'' +
                 ", updatedAt=" + updatedAt +
                 ", status='" + status + '\'' +
-                ", isDeleted=" + isDeleted +
+                ", isDeleted=" + isSuspended +
                 '}';
     }
 }

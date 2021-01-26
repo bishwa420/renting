@@ -64,9 +64,9 @@ public class UserController {
 
     @AdminPrivileged
     @DeleteMapping(value = "")
-    public ResponseEntity<BasicRestResponse> deleteUser(@Valid @RequestBody DeleteUserRequest request) {
+    private ResponseEntity<BasicRestResponse> deleteUser(@Valid @RequestBody DeleteUserRequest request) {
 
-        userService.deleteUser(request);
+        userService.suspendUser(request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

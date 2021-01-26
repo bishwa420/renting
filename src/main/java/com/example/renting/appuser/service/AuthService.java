@@ -91,7 +91,7 @@ public class AuthService {
 
     public String getToken(LoginRequest request) {
 
-        User user = userService.getNotDeletedUserByEmail(request.email);
+        User user = userService.getNotSuspendedActiveUser(request.email);
         if(!user.getStatus().equals(User.Status.VERIFIED)) {
             throw ForbiddenException.ex("Please verify your email first");
         }
