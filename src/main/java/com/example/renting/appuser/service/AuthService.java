@@ -5,6 +5,7 @@ import com.example.renting.appuser.model.LoginRequest;
 import com.example.renting.exception.ForbiddenException;
 import com.example.renting.exception.RentalException;
 import com.example.renting.exception.UnauthorizedException;
+import com.example.renting.model.UserInfo;
 import io.jsonwebtoken.*;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
@@ -81,7 +82,9 @@ public class AuthService {
                 .setIssuedAt(new Date())
                 .setAudience(user.email);
 
-        claims.putAll(getRoleMap(user));
+        Map<String, Object> map = getRoleMap(user);
+        map.put("userId", user.id);
+        claims.putAll(map);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -106,27 +109,44 @@ public class AuthService {
         userService.verifyUser(verificationParam);
     }
 
+    public UserInfo getUserInfo(String token) {
+
+        if(token == null) {
+            throw UnauthorizedException.ex("Token is missing");
+        }
+
+        Claims claims = getClaims(token);
+        Long userId = ((Integer) claims.get("userId")).longValue();
+        String role = (String) claims.get("role");
+
+        return UserInfo.of(userId, role);
+    }
+
+    private Claims getClaims(String token) {
+
+        try {
+            Jws<Claims> map = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            return map.getBody();
+        } catch (SignatureException | MalformedJwtException e) {
+            throw UnauthorizedException.ex("Token is invalid");
+        } catch (ExpiredJwtException e) {
+            throw UnauthorizedException.ex("Token has expired");
+        }
+    }
+
     public User.Role getUserRole(String token) {
 
         if(token == null) {
             throw UnauthorizedException.ex("Token is missing");
         }
 
-        try {
+        Claims claims = getClaims(token);
+        String email = claims.getAudience();
 
-            Jws<Claims> map = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            Claims claims = map.getBody();
-            String email = claims.getAudience();
+        User.Role role = User.Role.valueOf((String) claims.get("role"));
 
-            User.Role role = User.Role.valueOf((String) claims.get("role"));
+        log.info("The token received from user: {} with role: {}", email, role.get());
 
-            log.info("The token received from user: {} with role: {}", email, role.get());
-
-            return role;
-        } catch (SignatureException | MalformedJwtException e) {
-            throw UnauthorizedException.ex("Token is invalid");
-        } catch (ExpiredJwtException e) {
-            throw UnauthorizedException.ex("Token has expired");
-        }
+        return role;
     }
 }

@@ -86,6 +86,8 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
 
         User.Role role = authService.getUserRole(token);
 
+        request.setAttribute("userInfo", authService.getUserInfo(token));
+
         ClientPrivileged clientPrivileged = getClientPrivilegedAnnotation(handler);
         if(clientPrivileged != null)
             return true;
