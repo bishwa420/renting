@@ -130,9 +130,6 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        if(user.isSuspended) {
-            throw NotFoundException.ex("User is already suspended");
-        }
 
         Optional<User> userWithSameEmailOptional = userRepository.findByEmail(request.email);
         if(!userWithSameEmailOptional.isPresent()) {
