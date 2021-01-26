@@ -2,6 +2,7 @@ package com.example.renting.appuser.service;
 
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.model.LoginRequest;
+import com.example.renting.exception.ForbiddenException;
 import com.example.renting.exception.RentalException;
 import com.example.renting.exception.UnauthorizedException;
 import io.jsonwebtoken.*;
@@ -91,9 +92,18 @@ public class AuthService {
     public String getToken(LoginRequest request) {
 
         User user = userService.getNotDeletedUserByEmail(request.email);
+        if(!user.getStatus().equals(User.Status.VERIFIED)) {
+            throw ForbiddenException.ex("Please verify your email first");
+        }
+
         passwordMatches(user.password, request.password);
 
         return generateToken(user);
+    }
+
+    public void verifyUser(String verificationParam) {
+
+        userService.verifyUser(verificationParam);
     }
 
     public User.Role getUserRole(String token) {

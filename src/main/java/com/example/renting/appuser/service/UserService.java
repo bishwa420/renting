@@ -3,6 +3,7 @@ package com.example.renting.appuser.service;
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
 import com.example.renting.appuser.model.*;
+import com.example.renting.exception.BadRequestException;
 import com.example.renting.exception.ConflictException;
 import com.example.renting.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -52,15 +53,26 @@ public class UserService {
         return user;
     }
 
+    public User getValidUserForVerification(String param) {
+
+        Optional<User> userOptional = userRepository.findByVerificationParam(param);
+        if(!userOptional.isPresent()) {
+            log.error("User with verification param {} not found", param);
+            throw NotFoundException.ex("User not found");
+        }
+        User user = userOptional.get();
+        if(user.isDeleted) {
+            throw NotFoundException.ex("User is not eligible for verification");
+        }
+        if(user.getStatus().equals(User.Status.VERIFIED)) {
+            throw BadRequestException.ex("User is already verified");
+        }
+        return user;
+    }
+
     public void signup(SignupRequest signupRequest) {
 
-        userDoesNotExist(signupRequest.email);
-
-        User user = User.of(signupRequest);
-
-        user = userRepository.save(user);
-
-        log.info("User with email {} has stored into DB successfully", user.email);
+        createUser(signupRequest);
     }
 
     public UserListResponse getUserList(int page, int limit, String nameLike, String emailLike) {
@@ -163,5 +175,16 @@ public class UserService {
         user.updatedAt = LocalDateTime.now();
 
         userRepository.save(user);
+    }
+
+    public void verifyUser(String param) {
+
+        User user = getValidUserForVerification(param);
+
+        user.setStatus(User.Status.VERIFIED);
+
+        userRepository.save(user);
+
+        log.info("User with email {} has verified himself successfully", user.email);
     }
 }

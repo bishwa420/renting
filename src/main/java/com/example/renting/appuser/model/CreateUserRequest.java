@@ -13,6 +13,11 @@ public class CreateUserRequest {
     @Size(min = 1, max = 100, message = "Name must be between 1 to 100 characters")
     public String name;
 
+    @NotNull(message = "Password must be given")
+    @NotEmpty(message = "Password cannot be empty")
+    @Size(max = 50, message = "Password must be between 1 to 50 characters")
+    public String password;
+
     @NotNull(message = "Email must be given")
     @NotEmpty(message = "Email cannot be empty")
     @Size(max = 100, message = "Email must be between 1 to 100 characters")

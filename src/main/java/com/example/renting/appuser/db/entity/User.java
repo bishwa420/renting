@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder(toBuilder = true)
@@ -24,8 +25,7 @@ public class User {
 
     public enum Status {
         NOT_VERIFIED("NOT_VERIFIED"),
-        ACTIVE("ACTIVE"),
-        INACTIVE("INACTIVE");
+        VERIFIED("VERIFIED");
 
         private String status;
 
@@ -80,6 +80,9 @@ public class User {
     @Column(name = "is_deleted")
     public Boolean isDeleted;
 
+    @Column(name = "verification_param")
+    public String verificationParam;
+
     public void setStatus(Status status) {
 
         this.status = status.get();
@@ -109,41 +112,16 @@ public class User {
         User user = new User();
         user.name = createUserRequest.name;
         user.email = createUserRequest.email;
+        user.password = BCrypt.hashpw(createUserRequest.password, BCrypt.gensalt());
         user.role = createUserRequest.role;
         user.updatedAt = LocalDateTime.now();
         user.setStatus(Status.NOT_VERIFIED);
+        user.verificationParam = UUID.randomUUID().toString().replaceAll("-","");
         user.isDeleted = false;
 
         return user;
     }
 
-    public static User signup(SignupRequest request) {
-
-        User user = new User();
-        user.name = request.name;
-        user.email = request.email;
-        user.password = BCrypt.hashpw(request.password, BCrypt.gensalt());
-        user.role = request.role;
-        user.updatedAt = LocalDateTime.now();
-        user.setStatus(Status.NOT_VERIFIED);
-        user.isDeleted = false;
-
-        return user;
-    }
-
-    public static User of(SignupRequest request) {
-
-        User user = new User();
-        user.name = request.name;
-        user.email = request.email;
-        user.password = BCrypt.hashpw(request.password, BCrypt.gensalt());
-        user.role = request.role;
-        user.updatedAt = LocalDateTime.now();
-        user.setStatus(Status.NOT_VERIFIED);
-        user.isDeleted = false;
-
-        return user;
-    }
 
     public void update(UpdateUserRequest request) {
 

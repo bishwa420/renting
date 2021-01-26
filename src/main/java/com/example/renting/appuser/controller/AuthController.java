@@ -4,6 +4,7 @@ import com.example.renting.annotation.NoTokenRequired;
 import com.example.renting.appuser.model.LoginRequest;
 import com.example.renting.appuser.model.LoginResponse;
 import com.example.renting.appuser.service.AuthService;
+import com.example.renting.model.BasicRestResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,14 @@ public class AuthController {
         return ResponseEntity.ok(
             LoginResponse.of(token)
         );
+    }
+
+    @NoTokenRequired
+    @GetMapping(value = "/verification")
+    public ResponseEntity verify(@RequestHeader(name = "verificationParam") String verificationParam) {
+
+        authService.verifyUser(verificationParam);
+
+        return ResponseEntity.ok(BasicRestResponse.message("User has been verified successfully"));
     }
 }
