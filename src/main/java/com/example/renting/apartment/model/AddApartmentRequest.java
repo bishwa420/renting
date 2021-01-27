@@ -26,15 +26,15 @@ public class AddApartmentRequest {
 
     @NotNull(message = "Price must be given")
     @Min(value = 1, message = "Price must be at least 1")
-    public BigDecimal price;
+    public Long price;
 
     @NotNull(message = "Floor area must be given")
     @Min(value = 100, message = "At least 100 square feet apartments are allowed")
-    public BigDecimal floorArea;
+    public Long floorArea;
 
     @NotNull(message = "Number of rooms must be given")
     @Min(value = 1, message = "At least 1 room should be there")
-    public int roomCount;
+    public Long roomCount;
 
     @Override
     public String toString() {

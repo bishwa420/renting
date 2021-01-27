@@ -23,10 +23,10 @@ public class Apartment {
     public String description;
 
     @Column(name = "room_count")
-    public int roomCount;
+    public Long roomCount;
 
     @Column(name = "price")
-    public BigDecimal price;
+    public Long price;
 
     @Column(name = "latitude")
     public String latitude;
@@ -38,7 +38,7 @@ public class Apartment {
     public Long realtorId;
 
     @Column(name = "floor_area")
-    public BigDecimal floorArea;
+    public Long floorArea;
 
     @Column(name = "updated_at")
     public LocalDateTime updatedAt;

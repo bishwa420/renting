@@ -3,6 +3,7 @@ package com.example.renting.apartment.controller;
 import com.example.renting.annotation.AdminPrivileged;
 import com.example.renting.annotation.RealtorPrivileged;
 import com.example.renting.apartment.model.AddApartmentRequest;
+import com.example.renting.apartment.model.ApartmentListResponse;
 import com.example.renting.apartment.service.ApartmentService;
 import com.example.renting.model.BasicRestResponse;
 import com.example.renting.model.UserInfo;
@@ -35,5 +36,23 @@ public class ApartmentController {
         apartmentService.addApartment(request, userInfo);
 
         return ResponseEntity.ok(BasicRestResponse.message("Apartment added successfully"));
+    }
+
+    @AdminPrivileged
+    @RealtorPrivileged
+    @GetMapping("")
+    public ResponseEntity getApartments(@RequestParam(name = "minArea", defaultValue = "1") Long minArea,
+                                        @RequestParam(name = "maxArea", defaultValue = "10000000000000000") Long maxArea,
+                                        @RequestParam(name = "minPrice", defaultValue = "1") Long minPrice,
+                                        @RequestParam(name = "maxPrice", defaultValue = "1000000000000000") Long maxPrice,
+                                        @RequestParam(name = "minRooms", defaultValue = "1") Long minRooms,
+                                        @RequestParam(name = "maxRooms", defaultValue = "1000") Long maxRooms,
+                                        @RequestParam(name = "page", defaultValue = "1") int page,
+                                        @RequestParam(name = "limit", defaultValue = "10") int limit,
+                                        UserInfo userInfo) {
+
+        ApartmentListResponse response = apartmentService.getApartments(minArea, maxArea, minPrice, maxPrice,
+                minRooms, maxRooms, page, limit, userInfo);
+        return ResponseEntity.ok(response);
     }
 }
