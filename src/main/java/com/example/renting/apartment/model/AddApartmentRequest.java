@@ -1,6 +1,5 @@
 package com.example.renting.apartment.model;
 
-import javax.swing.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,6 +13,7 @@ public class AddApartmentRequest {
     public String name;
 
     @NotBlank(message = "Description is required")
+    @Size(max = 500, message = "Description can be at most 500 characters long")
     public String description;
 
     @NotBlank(message = "Latitude is required")

@@ -3,10 +3,12 @@ package com.example.renting.apartment.controller;
 import com.example.renting.annotation.AdminPrivileged;
 import com.example.renting.annotation.RealtorPrivileged;
 import com.example.renting.apartment.model.AddApartmentRequest;
+import com.example.renting.apartment.service.ApartmentService;
 import com.example.renting.model.BasicRestResponse;
 import com.example.renting.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,9 @@ public class ApartmentController {
 
     private static final Logger log = LoggerFactory.getLogger(ApartmentController.class);
 
+    @Autowired
+    private ApartmentService apartmentService;
+
     @AdminPrivileged
     @RealtorPrivileged
     @PostMapping("")
@@ -26,6 +31,9 @@ public class ApartmentController {
                                        UserInfo userInfo) {
 
         log.info("Received ADD_APARTMENT request from user: {}", userInfo);
+
+        apartmentService.addApartment(request, userInfo);
+
         return ResponseEntity.ok(BasicRestResponse.message("Apartment added successfully"));
     }
 }

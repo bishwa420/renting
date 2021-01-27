@@ -1,8 +1,11 @@
 package com.example.renting.apartment.db.entity;
 
+import com.example.renting.apartment.model.AddApartmentRequest;
+import com.example.renting.model.UserInfo;
+
 import javax.persistence.*;
-import javax.print.attribute.standard.MediaSize;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Table(name = "apartment")
 @Entity
@@ -33,6 +36,31 @@ public class Apartment {
 
     @Column(name = "realtor_id")
     public Long realtorId;
+
+    @Column(name = "floor_area")
+    public BigDecimal floorArea;
+
+    @Column(name = "updated_at")
+    public LocalDateTime updatedAt;
+
+    public static Apartment of(AddApartmentRequest request, UserInfo userInfo) {
+
+        Apartment apartment = new Apartment();
+        apartment.name = request.name;
+        apartment.description = request.description;
+
+        // TODO verify the latitude & longitude
+        apartment.latitude = request.latitude;
+        apartment.longitude = request.longitude;
+
+        apartment.price = request.price;
+        apartment.floorArea = request.floorArea;
+        apartment.roomCount = request.roomCount;
+        apartment.realtorId = userInfo.userId;
+        apartment.updatedAt = LocalDateTime.now();
+
+        return apartment;
+    }
 
     @Override
     public String toString() {
