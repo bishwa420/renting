@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@CrossOrigin("")
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/apartment")
 public class ApartmentController {
