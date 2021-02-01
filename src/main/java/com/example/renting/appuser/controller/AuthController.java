@@ -31,11 +31,9 @@ public class AuthController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login(@RequestBody @Valid LoginRequest request) {
 
-        String token = authService.getToken(request);
+        LoginResponse response = authService.getToken(request);
 
-        return ResponseEntity.ok(
-            LoginResponse.of(token)
-        );
+        return ResponseEntity.ok(response);
     }
 
     @NoTokenRequired
@@ -43,9 +41,8 @@ public class AuthController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity loginWithGoogle(@RequestBody @Valid GoogleLoginRequest request) {
 
-        String token = authService.getTokenForGoogleLogin(request);
-        return ResponseEntity.ok(
-                LoginResponse.of(token));
+        LoginResponse response = authService.getTokenForGoogleLogin(request);
+        return ResponseEntity.ok(response);
     }
 
     @NoTokenRequired
@@ -53,9 +50,8 @@ public class AuthController {
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity loginWithFacebook(@Valid @RequestBody FacebookLoginRequest request) {
 
-        String token = authService.getTokenForFacebookLogin(request);
-        return ResponseEntity.ok(
-                LoginResponse.of(token));
+        LoginResponse response = authService.getTokenForFacebookLogin(request);
+        return ResponseEntity.ok(response);
     }
 
     @NoTokenRequired

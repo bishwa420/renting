@@ -4,6 +4,7 @@ import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.model.FacebookLoginRequest;
 import com.example.renting.appuser.model.GoogleLoginRequest;
 import com.example.renting.appuser.model.LoginRequest;
+import com.example.renting.appuser.model.LoginResponse;
 import com.example.renting.exception.ForbiddenException;
 import com.example.renting.exception.RentalException;
 import com.example.renting.exception.UnauthorizedException;
@@ -112,7 +113,7 @@ public class AuthService {
                 .compact();
     }
 
-    public String getToken(LoginRequest request) {
+    public LoginResponse getToken(LoginRequest request) {
 
         User user = userService.getNotSuspendedActiveUser(request.email);
         if(!user.getStatus().equals(User.Status.VERIFIED)) {
@@ -121,27 +122,31 @@ public class AuthService {
 
         passwordMatches(user.password, request.password);
 
-        return generateToken(user);
+        String token = generateToken(user);
+
+        return LoginResponse.of(token, user);
     }
 
-    public String getTokenForGoogleLogin(GoogleLoginRequest request) {
+    public LoginResponse getTokenForGoogleLogin(GoogleLoginRequest request) {
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
                 .build();
 
         try {
-            GoogleIdToken token = verifier.verify(request.token);
-            if(token == null) {
+            GoogleIdToken googleIdToken = verifier.verify(request.token);
+            if(googleIdToken == null) {
                 throw UnauthorizedException.ex("Google login failed");
             }
 
-            Payload payload = token.getPayload();
+            Payload payload = googleIdToken.getPayload();
             String email = payload.getEmail();
 
             User user = userService.getNotSuspendedActiveUser(email);
 
-            return generateToken(user);
+            String token = generateToken(user);
+
+            return LoginResponse.of(token, user);
 
         } catch (GeneralSecurityException | IOException e) {
             log.error("Google ID token verification exception: {}", e.getMessage(), e);
@@ -150,12 +155,13 @@ public class AuthService {
 
     }
 
-    public String getTokenForFacebookLogin(FacebookLoginRequest request) {
+    public LoginResponse getTokenForFacebookLogin(FacebookLoginRequest request) {
 
         String email = facebookService.getEmail(request.token);
         User user = userService.getNotSuspendedActiveUser(email);
 
-        return generateToken(user);
+        String token = generateToken(user);
+        return LoginResponse.of(token, user);
     }
 
     public void verifyUser(String verificationParam) {
