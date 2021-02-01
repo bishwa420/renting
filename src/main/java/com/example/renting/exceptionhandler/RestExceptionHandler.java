@@ -2,7 +2,9 @@ package com.example.renting.exceptionhandler;
 
 import com.example.renting.exception.RentalException;
 import com.example.renting.model.BasicRestResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,7 +41,15 @@ public class RestExceptionHandler {
                 .body(BasicRestResponse.message(errorMessage));
     }
 
-    @ExceptionHandler(RentalException.class)
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(BasicRestResponse.message("Media type not supported"));
+    }
+
+    @ExceptionHandler({RentalException.class})
     public ResponseEntity handleRentalException(RentalException ex) {
 
         return ResponseEntity

@@ -1,6 +1,8 @@
 package com.example.renting.appuser.controller;
 
 import com.example.renting.annotation.NoTokenRequired;
+import com.example.renting.appuser.model.FacebookLoginRequest;
+import com.example.renting.appuser.model.GoogleLoginRequest;
 import com.example.renting.appuser.model.LoginRequest;
 import com.example.renting.appuser.model.LoginResponse;
 import com.example.renting.appuser.service.AuthService;
@@ -34,6 +36,26 @@ public class AuthController {
         return ResponseEntity.ok(
             LoginResponse.of(token)
         );
+    }
+
+    @NoTokenRequired
+    @PostMapping(value = "login/google", consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity loginWithGoogle(@RequestBody @Valid GoogleLoginRequest request) {
+
+        String token = authService.getTokenForGoogleLogin(request);
+        return ResponseEntity.ok(
+                LoginResponse.of(token));
+    }
+
+    @NoTokenRequired
+    @PostMapping(value = "login/facebook", consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity loginWithFacebook(@Valid @RequestBody FacebookLoginRequest request) {
+
+        String token = authService.getTokenForFacebookLogin(request);
+        return ResponseEntity.ok(
+                LoginResponse.of(token));
     }
 
     @NoTokenRequired
