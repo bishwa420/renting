@@ -1,8 +1,10 @@
 package com.example.renting.appuser.controller;
 
 import com.example.renting.annotation.AdminPrivileged;
-import com.example.renting.annotation.NoTokenRequired;
-import com.example.renting.appuser.model.*;
+import com.example.renting.appuser.model.request.CreateUserRequest;
+import com.example.renting.appuser.model.request.DeleteUserRequest;
+import com.example.renting.appuser.model.request.UpdateUserRequest;
+import com.example.renting.appuser.model.response.UserListResponse;
 import com.example.renting.appuser.service.UserService;
 import com.example.renting.model.BasicRestResponse;
 import org.slf4j.Logger;
@@ -24,20 +26,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @NoTokenRequired
-    @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<BasicRestResponse> signup(@Valid @RequestBody SignupRequest request) {
-
-        log.info("Received sign up request from user: {}", request);
-
-        userService.signup(request);
-
-        return ResponseEntity.ok(
-            BasicRestResponse.message("User signed up successfully")
-        );
-    }
 
     @AdminPrivileged
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)

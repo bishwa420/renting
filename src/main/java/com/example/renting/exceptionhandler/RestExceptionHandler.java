@@ -2,6 +2,8 @@ package com.example.renting.exceptionhandler;
 
 import com.example.renting.exception.RentalException;
 import com.example.renting.model.BasicRestResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -14,6 +16,8 @@ import java.util.Objects;
 
 @ControllerAdvice
 public class RestExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
@@ -44,6 +48,7 @@ public class RestExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException ex) {
 
+        log.error("Exception: {}", ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(BasicRestResponse.message("Media type not supported"));
@@ -52,8 +57,18 @@ public class RestExceptionHandler {
     @ExceptionHandler({RentalException.class})
     public ResponseEntity handleRentalException(RentalException ex) {
 
+        log.error("Exception: {}", ex.getMessage(), ex);
         return ResponseEntity
                 .status(ex.getCode())
                 .body(BasicRestResponse.message(ex.getMessage()));
+    }
+
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity handleException(Exception ex) {
+
+        log.error("Exception: {}", ex.getMessage(), ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(BasicRestResponse.message("Internal error!"));
     }
 }

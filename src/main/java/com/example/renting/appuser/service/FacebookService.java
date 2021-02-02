@@ -1,5 +1,8 @@
 package com.example.renting.appuser.service;
 
+import com.example.renting.appuser.model.request.FacebookLoginRequest;
+import com.example.renting.appuser.model.request.FacebookSignupRequest;
+import com.example.renting.appuser.model.thirdparty.FacebookUser;
 import com.example.renting.exception.UnauthorizedException;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
@@ -26,5 +29,13 @@ public class FacebookService {
             log.error("Facebook token verification failed: {}", e.getMessage(), e);
             throw UnauthorizedException.ex("Facebook login failed");
         }
+    }
+
+    public FacebookUser getFacebookUser(FacebookLoginRequest request) {
+        return null;
+    }
+
+    public FacebookUser getFacebookUser(FacebookSignupRequest request) {
+        return null;
     }
 }

@@ -1,6 +1,4 @@
-package com.example.renting.appuser.model;
-
-import javax.validation.constraints.*;
+package com.example.renting.appuser.model.request;
 
 public class SignupRequest extends CreateUserRequest {
 

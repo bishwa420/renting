@@ -2,7 +2,11 @@ package com.example.renting.appuser.service;
 
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
-import com.example.renting.appuser.model.*;
+import com.example.renting.appuser.model.request.*;
+import com.example.renting.appuser.model.response.UserListResponse;
+import com.example.renting.appuser.model.thirdparty.FacebookUser;
+import com.example.renting.appuser.model.thirdparty.GoogleUser;
+import com.example.renting.appuser.model.thirdparty.ThirdPartyUser;
 import com.example.renting.exception.BadRequestException;
 import com.example.renting.exception.ConflictException;
 import com.example.renting.exception.NotFoundException;
@@ -29,6 +33,12 @@ public class UserService {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private GoogleService googleService;
+
+    @Autowired
+    private FacebookService facebookService;
 
     private void userDoesNotExist(String email) {
 
@@ -73,6 +83,27 @@ public class UserService {
     public void signup(SignupRequest signupRequest) {
 
         createUser(signupRequest);
+    }
+
+    private void signup(ThirdPartyUser thirdPartyUser, String role) {
+
+        userDoesNotExist(thirdPartyUser.email);
+
+        User user = User.of(thirdPartyUser, role);
+        userRepository.save(user);
+
+        log.info("User with email {} stored into DB successfully", user.email);
+    }
+
+    public void signup(GoogleSignupRequest googleSignupRequest) {
+
+        GoogleUser googleUser = googleService.getGoogleUser(googleSignupRequest);
+        signup(googleUser, googleSignupRequest.role);
+    }
+
+    public void signup(FacebookSignupRequest facebookSignupRequest) {
+
+        FacebookUser facebookUser = facebookService.getFacebookUser(facebookSignupRequest);
     }
 
     public UserListResponse getUserList(int page, int limit, String nameLike, String emailLike) {

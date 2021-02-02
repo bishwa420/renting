@@ -3,7 +3,7 @@ package com.example.renting;
 import com.example.renting.appuser.controller.UserController;
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
-import com.example.renting.appuser.model.CreateUserRequest;
+import com.example.renting.appuser.model.request.CreateUserRequest;
 import com.example.renting.model.BasicRestResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

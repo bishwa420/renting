@@ -1,4 +1,4 @@
-package com.example.renting.appuser.model;
+package com.example.renting.appuser.model.request;
 
 
 import javax.validation.constraints.NotBlank;

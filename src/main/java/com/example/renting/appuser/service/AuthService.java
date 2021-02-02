@@ -1,10 +1,11 @@
 package com.example.renting.appuser.service;
 
 import com.example.renting.appuser.db.entity.User;
-import com.example.renting.appuser.model.FacebookLoginRequest;
-import com.example.renting.appuser.model.GoogleLoginRequest;
-import com.example.renting.appuser.model.LoginRequest;
-import com.example.renting.appuser.model.LoginResponse;
+import com.example.renting.appuser.model.request.FacebookLoginRequest;
+import com.example.renting.appuser.model.request.GoogleLoginRequest;
+import com.example.renting.appuser.model.request.LoginRequest;
+import com.example.renting.appuser.model.response.LoginResponse;
+import com.example.renting.appuser.model.thirdparty.GoogleUser;
 import com.example.renting.exception.ForbiddenException;
 import com.example.renting.exception.RentalException;
 import com.example.renting.exception.UnauthorizedException;
@@ -42,10 +43,12 @@ public class AuthService {
     private UserService userService;
 
     @Autowired
+    private GoogleService googleService;
+
+    @Autowired
     private FacebookService facebookService;
 
     private static final String APP_SECRET_KEY_STRING = "7fKkVuuu0FuGy7SUPXk8nAT3d+MxZnBktujv0G3qVax/BOqr3hHPw1SN8XNaKVrX1bkZcLOTlMn2pcWYbGCokA==";
-    private static final String GOOGLE_CLIENT_ID = "758898908443-kvlhgb8bpbtfs0jam1kq6i9m4bc1vst5.apps.googleusercontent.com";
 
     private SecretKey appOwnSecretKey;
 
@@ -66,10 +69,6 @@ public class AuthService {
         ROLE_ADMIN.put("role", User.Role.ADMIN.get());
         ROLE_CLIENT.put("role", User.Role.CLIENT.get());
         ROLE_REALTOR.put("role", User.Role.REALTOR.get());
-
-        FacebookClient fbClient = new DefaultFacebookClient("1530092413856847|zIqheMNwE-YkRBIjwEKAY4ryXHE", Version.VERSION_3_1);
-        FacebookClient.DebugTokenInfo info = fbClient.debugToken("EAAVvnGbNLE8BAAzLbkHZAEC5apPvyA9OiPYlh9AZA2bGqenmWKAc3tZAbW1MfZAZBI9T3pOpZBCmSL1EzM1gOUUgI6YfaHxvybVgcyNPG7h29uAZARbNOc8G9nc7EkooYLFjOWYak1kv58EtDh6CugLe1W38fZAUPxtDlcEXnBGYRrdyXYQyj77a");
-        log.info("info");
     }
 
     private Map<String, Object> getRoleMap(User user) {
@@ -89,6 +88,9 @@ public class AuthService {
 
     private void passwordMatches(String hashPassword, String plainPassword) {
 
+        if(hashPassword == null || plainPassword == null) {
+            throw UnauthorizedException.ex("Invalid credentials");
+        }
         if(!BCrypt.checkpw(plainPassword, hashPassword)) {
             throw UnauthorizedException.ex("Invalid credentials");
         }
@@ -129,30 +131,11 @@ public class AuthService {
 
     public LoginResponse getTokenForGoogleLogin(GoogleLoginRequest request) {
 
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-                .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
-                .build();
+        GoogleUser googleUser = googleService.getGoogleUser(request);
+        User user = userService.getNotSuspendedActiveUser(googleUser.email);
+        String token = generateToken(user);
 
-        try {
-            GoogleIdToken googleIdToken = verifier.verify(request.token);
-            if(googleIdToken == null) {
-                throw UnauthorizedException.ex("Google login failed");
-            }
-
-            Payload payload = googleIdToken.getPayload();
-            String email = payload.getEmail();
-
-            User user = userService.getNotSuspendedActiveUser(email);
-
-            String token = generateToken(user);
-
-            return LoginResponse.of(token, user);
-
-        } catch (GeneralSecurityException | IOException e) {
-            log.error("Google ID token verification exception: {}", e.getMessage(), e);
-            throw UnauthorizedException.ex("Invalid Google token");
-        }
-
+        return LoginResponse.of(token, user);
     }
 
     public LoginResponse getTokenForFacebookLogin(FacebookLoginRequest request) {

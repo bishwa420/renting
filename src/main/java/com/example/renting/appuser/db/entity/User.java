@@ -1,7 +1,8 @@
 package com.example.renting.appuser.db.entity;
 
-import com.example.renting.appuser.model.CreateUserRequest;
-import com.example.renting.appuser.model.UpdateUserRequest;
+import com.example.renting.appuser.model.request.CreateUserRequest;
+import com.example.renting.appuser.model.request.UpdateUserRequest;
+import com.example.renting.appuser.model.thirdparty.ThirdPartyUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -113,6 +114,20 @@ public class User {
         user.email = createUserRequest.email;
         user.password = BCrypt.hashpw(createUserRequest.password, BCrypt.gensalt());
         user.role = createUserRequest.role;
+        user.updatedAt = LocalDateTime.now();
+        user.setStatus(Status.NOT_VERIFIED);
+        user.verificationParam = UUID.randomUUID().toString().replaceAll("-","");
+        user.isSuspended = false;
+
+        return user;
+    }
+
+    public static User of(ThirdPartyUser thirdPartyUser, String role) {
+
+        User user = new User();
+        user.name = thirdPartyUser.name;
+        user.email = thirdPartyUser.email;
+        user.role = role;
         user.updatedAt = LocalDateTime.now();
         user.setStatus(Status.NOT_VERIFIED);
         user.verificationParam = UUID.randomUUID().toString().replaceAll("-","");

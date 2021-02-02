@@ -1,4 +1,4 @@
-package com.example.renting.appuser.model;
+package com.example.renting.appuser.model.response;
 
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.model.Page;

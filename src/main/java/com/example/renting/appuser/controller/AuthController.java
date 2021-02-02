@@ -1,11 +1,10 @@
 package com.example.renting.appuser.controller;
 
 import com.example.renting.annotation.NoTokenRequired;
-import com.example.renting.appuser.model.FacebookLoginRequest;
-import com.example.renting.appuser.model.GoogleLoginRequest;
-import com.example.renting.appuser.model.LoginRequest;
-import com.example.renting.appuser.model.LoginResponse;
+import com.example.renting.appuser.model.request.*;
+import com.example.renting.appuser.model.response.LoginResponse;
 import com.example.renting.appuser.service.AuthService;
+import com.example.renting.appuser.service.UserService;
 import com.example.renting.model.BasicRestResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,35 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserService userService;
+
+    @NoTokenRequired
+    @PostMapping(value = "signup", consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BasicRestResponse> signup(@Valid @RequestBody SignupRequest request) {
+
+        log.info("Received sign up request from user: {}", request);
+
+        userService.signup(request);
+
+        return ResponseEntity.ok(
+                BasicRestResponse.message("User signed up successfully")
+        );
+    }
+
+    @NoTokenRequired
+    @PostMapping(value = "signup/google", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BasicRestResponse> signupWithGoogle(@Valid @RequestBody GoogleSignupRequest request) {
+
+        log.info("Received a Google signup request");
+
+        userService.signup(request);
+
+        return ResponseEntity.ok(BasicRestResponse.message("User signed up successfully"));
+    }
 
     @NoTokenRequired
     @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE,
