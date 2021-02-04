@@ -55,6 +55,18 @@ public class AuthController {
     }
 
     @NoTokenRequired
+    @PostMapping(value = "signup/facebook", consumes = MediaType.APPLICATION_JSON_VALUE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BasicRestResponse> signupWithFacebook(@Valid @RequestBody FacebookSignupRequest request) {
+
+        log.info("Received a Facebook signup request");
+
+        userService.signup(request);
+
+        return ResponseEntity.ok(BasicRestResponse.message("User signed up successfully"));
+    }
+
+    @NoTokenRequired
     @PostMapping(value = "login", consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login(@RequestBody @Valid LoginRequest request) {

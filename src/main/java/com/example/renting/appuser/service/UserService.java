@@ -104,6 +104,7 @@ public class UserService {
     public void signup(FacebookSignupRequest facebookSignupRequest) {
 
         FacebookUser facebookUser = facebookService.getFacebookUser(facebookSignupRequest);
+        signup(facebookUser, facebookSignupRequest.role);
     }
 
     public UserListResponse getUserList(int page, int limit, String nameLike, String emailLike) {

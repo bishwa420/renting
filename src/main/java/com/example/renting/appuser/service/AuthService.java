@@ -5,6 +5,7 @@ import com.example.renting.appuser.model.request.FacebookLoginRequest;
 import com.example.renting.appuser.model.request.GoogleLoginRequest;
 import com.example.renting.appuser.model.request.LoginRequest;
 import com.example.renting.appuser.model.response.LoginResponse;
+import com.example.renting.appuser.model.thirdparty.FacebookUser;
 import com.example.renting.appuser.model.thirdparty.GoogleUser;
 import com.example.renting.exception.ForbiddenException;
 import com.example.renting.exception.RentalException;
@@ -140,8 +141,8 @@ public class AuthService {
 
     public LoginResponse getTokenForFacebookLogin(FacebookLoginRequest request) {
 
-        String email = facebookService.getEmail(request.token);
-        User user = userService.getNotSuspendedActiveUser(email);
+        FacebookUser facebookUser = facebookService.getFacebookUser(request);
+        User user = userService.getNotSuspendedActiveUser(facebookUser.email);
 
         String token = generateToken(user);
         return LoginResponse.of(token, user);
