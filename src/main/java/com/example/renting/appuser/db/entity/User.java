@@ -3,9 +3,6 @@ package com.example.renting.appuser.db.entity;
 import com.example.renting.appuser.model.request.CreateUserRequest;
 import com.example.renting.appuser.model.request.UpdateUserRequest;
 import com.example.renting.appuser.model.thirdparty.ThirdPartyUser;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Builder(toBuilder = true)
 @Table(name = "app_user")
-@AllArgsConstructor
-@NoArgsConstructor
 public class User {
 
     private static final Logger log = LoggerFactory.getLogger(User.class);
