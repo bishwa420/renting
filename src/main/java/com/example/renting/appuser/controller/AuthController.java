@@ -96,7 +96,7 @@ public class AuthController {
 
     @NoTokenRequired
     @GetMapping(value = "/verification")
-    public ResponseEntity verify(@RequestHeader(name = "verificationParam") String verificationParam) {
+    public ResponseEntity verify(@RequestParam(name = "verificationParam") String verificationParam) {
 
         authService.verifyUser(verificationParam);
 
