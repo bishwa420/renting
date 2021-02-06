@@ -77,7 +77,8 @@ public class UserOperationsTest {
         request.email = "invalid";
         request.name = "John";
         request.role = "ADMIN";
-        MvcResult result = this.mockMvc.perform(post("/user")
+        MvcResult result = this.mockMvc.perform(post("/user/create")
+                                                .header("token", "eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI3OThjZDUzZWYxNzE0ZjgyODk4Yjk5YTJlMzQ4ZjM0MiIsInN1YiI6IkF1dGhlbnRpY2F0aW9uIHRva2VuIiwiZXhwIjoxNjEyNzE0ODY5LCJpYXQiOjE2MTI2Mjg0NjksImF1ZCI6ImlhbWJpc2h3YUBzdHVkZW50LnN1c3QuZWR1Iiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoyfQ.WuIh9HdeqBFiiLf7Ig6SxjhNxBSeLW3ht7GTxrq954D_pEPZ9iiYsFosGrF8EzqomQEpUK4BIc65j14fHoWr1Q")
                                                 .contentType(MediaType.APPLICATION_JSON)
                                                 .content(new ObjectMapper().writeValueAsString(request)))
                                         .andDo(print())
@@ -86,7 +87,8 @@ public class UserOperationsTest {
         String content = result.getResponse().getContentAsString();
 
         BasicRestResponse response = new ObjectMapper().readValue(content, BasicRestResponse.class);
-        assertThat(response.message.equals("Email address must be valid"));
+
+        assert(response.message.equals("Password must be given"));
     }
 
     //@Test
