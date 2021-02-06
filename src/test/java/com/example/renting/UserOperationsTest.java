@@ -4,6 +4,7 @@ import com.example.renting.appuser.controller.UserController;
 import com.example.renting.appuser.db.entity.User;
 import com.example.renting.appuser.db.repo.UserRepository;
 import com.example.renting.appuser.model.request.CreateUserRequest;
+import com.example.renting.interceptor.RequestInterceptor;
 import com.example.renting.model.BasicRestResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -40,8 +42,11 @@ public class UserOperationsTest {
     @InjectMocks
     private UserController userController;
 
-    @Mock
+    @MockBean
     private UserRepository userRepository;
+
+    @MockBean
+    private RequestInterceptor requestInterceptor;
 
     @BeforeEach
     public void init() {
@@ -51,13 +56,13 @@ public class UserOperationsTest {
         Mockito.when(userRepository.findByEmail(Mockito.anyString()))
                 .thenReturn(getConflictUser());
 
-        log.info("Before each method called & executed successfully");
+        Mockito.when(requestInterceptor.preHandle(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(true);
 
     }
 
     private Optional<User> getConflictUser() {
 
-        log.info("Conflict method called....");
         User user = new User();
         user.email = "abc@def.ghi";
         return Optional.of(user);
@@ -91,15 +96,22 @@ public class UserOperationsTest {
         assert(response.message.equals("Password must be given"));
     }
 
-    //@Test
+    @Test
     public void whenSignupRequestHasDuplicateEmail_expectConflictResponseIsGiven() throws Exception {
 
+        log.info("Test method is being launched....");
         CreateUserRequest request = new CreateUserRequest();
         request.name = "John";
         request.email = "bishwa420@gmail.com";
         request.role = "REALTOR";
+        request.password = "password";
 
-        MvcResult result = this.mockMvc.perform(post("/user")
+        Mockito.when(userRepository.findByEmail(Mockito.anyString()))
+                .thenReturn(getConflictUser());
+
+
+        MvcResult result = this.mockMvc.perform(post("/user/create")
+                                                //.header("token", "eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiI3OThjZDUzZWYxNzE0ZjgyODk4Yjk5YTJlMzQ4ZjM0MiIsInN1YiI6IkF1dGhlbnRpY2F0aW9uIHRva2VuIiwiZXhwIjoxNjEyNzE0ODY5LCJpYXQiOjE2MTI2Mjg0NjksImF1ZCI6ImlhbWJpc2h3YUBzdHVkZW50LnN1c3QuZWR1Iiwicm9sZSI6IkFETUlOIiwidXNlcklkIjoyfQ.WuIh9HdeqBFiiLf7Ig6SxjhNxBSeLW3ht7GTxrq954D_pEPZ9iiYsFosGrF8EzqomQEpUK4BIc65j14fHoWr1Q")
                                                 .content(new ObjectMapper().writeValueAsString(request))
                                                 .contentType(MediaType.APPLICATION_JSON))
                                         .andDo(print())
@@ -109,11 +121,6 @@ public class UserOperationsTest {
         String content = result.getResponse().getContentAsString();
         BasicRestResponse response = new ObjectMapper().readValue(content, BasicRestResponse.class);
 
-        assertThat(response.message.equals("User with email: " + "a@b.c already exists"));
-    }
-
-    @Test
-    public void whenUserListIsFetched_expectTheUserList() throws Exception {
-
+        assert(response.message.equals("User with email: " + request.email + " already exists"));
     }
 }
