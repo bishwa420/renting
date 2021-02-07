@@ -1,4 +1,4 @@
-package com.example.renting.exceptionhandler;
+package com.example.renting.controller;
 
 import com.example.renting.exception.RentalException;
 import com.example.renting.model.BasicRestResponse;

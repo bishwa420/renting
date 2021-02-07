@@ -82,31 +82,33 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         if(noTokenRequired != null)
             return true;
 
+        ClientPrivileged clientPrivileged = getClientPrivilegedAnnotation(handler);
+        RealtorPrivileged realtorPrivileged = getRealtorPrivilegedAnnotation(handler);
+        AdminPrivileged adminPrivileged = getAdminPrivilegedAnnotation(handler);
+
+        if(clientPrivileged == null && realtorPrivileged == null && adminPrivileged == null) {
+            return true;
+        }
+
         String token = request.getHeader("token");
 
         User.Role role = authService.getUserRole(token);
 
         request.setAttribute("userInfo", authService.getUserInfo(token));
 
-        ClientPrivileged clientPrivileged = getClientPrivilegedAnnotation(handler);
         if(clientPrivileged != null)
             return true;
 
-        RealtorPrivileged realtorPrivileged = getRealtorPrivilegedAnnotation(handler);
         if(realtorPrivileged != null) {
             if(role.equals(User.Role.REALTOR) || role.equals(User.Role.ADMIN))
                 return true;
             throw ForbiddenException.ex("You don't have the permission for this action");
         }
 
-        AdminPrivileged adminPrivileged = getAdminPrivilegedAnnotation(handler);
-        if(adminPrivileged != null) {
-            if(role.equals(User.Role.ADMIN))
-                return true;
-            throw ForbiddenException.ex("You don't have the permission for this action");
-        }
+        if(role.equals(User.Role.ADMIN))
+            return true;
+        throw ForbiddenException.ex("You don't have the permission for this action");
 
-        return true;
     }
 
     @Override
